@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="logo.webp" type="image/x-icon">
+    <title>MyCv.ng - ATS Evaluator</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>MyCv.ng - ATS Evaluator</h1>
+    </div>
+
+    <div class="container">
+        <div class="iframe-wrapper" id="iframeWrapper">
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                Loading application...
+            </div>
+            
+            <div class="controls">
+            </div>
+
+            <iframe 
+                id="consultantFrame"
+                src="https://mycv-ng-cv-ats-evaluator-719612962265.us-west1.run.app"
+                title="MyCv.ng - Nigerian CV Builder"
+                onload="hideLoading()"
+                onerror="showError()"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation">
+            </iframe>
+        </div>
+    </div>
+
+
+    <script>
+
+        function hideLoading() {
+        const loading = document.getElementById('loading');
+        if (loading) loading.style.display = 'none';
+        }
+        
+        // Force iframe wrapper into fullscreen always
+        function forceFullscreen() {
+        const wrapper = document.getElementById('iframeWrapper');
+        if (wrapper) {
+            wrapper.classList.add('fullscreen'); // Apply fullscreen styles
+            document.body.style.overflow = 'hidden'; // Prevent page scroll
+        }
+        }
+
+        // Ensure fullscreen on load
+        window.addEventListener('load', forceFullscreen);
+
+        // Keep it fullscreen on resize (mobile, tablet, desktop)
+        window.addEventListener('resize', forceFullscreen);
+
+        // Optional: prevent exiting fullscreen accidentally (Esc key)
+        document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            forceFullscreen();
+        }
+        });
+
+        // Listen for iframe messages
+        window.addEventListener("message", (event) => {
+        if (event.data.type === "task") {
+            saveTask(event.data);
+        }
+        });
+
+        // Save to localStorage
+        function saveTask(task) {
+        let tasks = JSON.parse(localStorage.getItem("taskHistory")) || [];
+        tasks.push(task);
+        localStorage.setItem("taskHistory", JSON.stringify(tasks));
+        console.log("Task saved:", task);
+        }
+
+        // Retrieve task history
+        function getTaskHistory() {
+        return JSON.parse(localStorage.getItem("taskHistory")) || [];
+        }
+
+        // Example: show tasks on page load
+        window.addEventListener("load", () => {
+        console.log("History:", getTaskHistory());
+        });
+
+
+    </script>
+
+</html>
